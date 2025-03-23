@@ -1,0 +1,11 @@
+<configuration>
+
+<input>
+<net-file value="ALMS_3Lane_Diversion.net.xml"/>
+<route-files value="ALMS_3Lane_Diversion.rou.xml"/>
+</input>
+<time>
+<begin value="0"/>
+<end value="2000"/>
+</time>
+</configuration>

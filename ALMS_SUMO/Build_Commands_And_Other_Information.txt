@@ -1,0 +1,8 @@
+ALMS_3_Lane_Highway_No_Diversions_1.
+
+netconvert --node-files ALMS_3_Lane_Highway_No_Diversions_1.nod.xml --edge-files ALMS_3_Lane_Highway_No_Diversions_1.edg.xml -t ALMS_3_Lane_Highway_No_Diversions_1.type.xlm -o ALMS_3_Lane_Highway_No_Diversions_1.net.xml
+
+netconvert --node-files ALMS_3Lane_Diversion.nod.xml --edge-files ALMS_3Lane_Diversion.edg.xml -t ALMS_3_Lane_Highway_No_Diversions_1.type.xml -o ALMS_3Lane_Diversion.net.xml
+
+
+

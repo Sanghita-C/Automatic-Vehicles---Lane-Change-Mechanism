@@ -1,0 +1,8 @@
+<nodes>
+<node id="n1" x="0" y="0" type="priority" />
+<node id="n2" x="250" y="0" type="priority" />
+<node id="n3" x="500" y="0" type="priority" />
+<node id="n4" x="750" y="0" type="priority" />
+<node id="n6" x="750" y="250" type="priority"/>
+<node id="n5" x="1000" y="0" type="priority" />
+</nodes>

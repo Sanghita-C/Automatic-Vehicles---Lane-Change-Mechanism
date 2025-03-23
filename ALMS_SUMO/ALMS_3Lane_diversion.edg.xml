@@ -1,0 +1,7 @@
+<edges>
+<edge from="n1" to="n2" id="1to2" type="3L100"/>
+<edge from="n2" to="n3" id="2to3" type="3L100"/>
+<edge from="n3" to="n4" id="3to4" type="3L100"/>
+<edge from="n3" to="n6" id="3to6" type="3L100"/>
+<edge from="n4" to="n5" id="4to5" type="3L100"/>
+</edges>
