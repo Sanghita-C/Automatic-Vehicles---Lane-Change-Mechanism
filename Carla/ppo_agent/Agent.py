@@ -40,6 +40,7 @@ class Agent:
 	def choose_action(self, input_A, input_B, input_C, input_D, input_E, input_F, input_G):
 		state = [input_A, input_B, input_C, input_D, input_E, input_F, input_G]
 		mu_steering, var_steering, mu_acc, var_acc = self.actor(state)  # dist stands for distribution
+		# so the action values are mu_steer, var_steer, mu_acc, var_acc --- this represents
 		value = self.critic(state)
 
 		dist_steering = Normal(loc = mu_steering, scale = var_steering**0.5)
@@ -49,10 +50,14 @@ class Agent:
 		# print(steering)
 		steering = np.clip(steering, -1.0, 1.0)
 
+		# so this gives us the final steering value 
+
 		dist_acc = Normal(loc = mu_acc, scale = var_acc**0.5)
 		acc = dist_acc.sample()
 		# print(acc)
 		acc = np.clip(acc, -1.0, 1.0)
+
+		# so this gives us the final acceleration value 
 
 		mu_steering = tf.squeeze(mu_steering)
 		var_steering = tf.squeeze(var_steering)
@@ -63,6 +68,9 @@ class Agent:
 		acc = tf.squeeze(acc)
 
 		value = tf.squeeze(value)
+
+		# we will be returning not just the final acc and steering but also the mu and var - we will store these values
+		
 
 		return mu_steering, var_steering, steering, mu_acc, var_acc, acc, value
 
