@@ -26,24 +26,38 @@ class CarEnv:
 		self.client.set_timeout(10.0)
 		self.world = self.client.get_world()
 		self.blueprint_library = self.world.get_blueprint_library()
+		#blueprint loads some list of available assets.
 		self.model3 = self.blueprint_library.filter('model3')[0]
 
 		#Need to tweak N
-		self.episode = 0
-		self.iters = 0
-		self.learn_iters = 0
-		self.N = 128
-		self.episode_rewards = []
+		self.episode = 0 #current episode number
+		self.iters = 0 #total timesteps so far
+		self.learn_iters = 0 #how many times the agent has trained 
+		self.N = 128 #number of steps after which the PPO agent learns
+		self.episode_rewards = [] #stores reward values for each episode to compute a running average
+		
 
 		self.agent = Agent(gamma=0.99, alpha=0.0003, gae_lambda=0.95, policy_clip=0.1,\
 			batch_size=64, N=2048, n_epochs=10)
 
+		# gamma - discount factor for future rewards
+		# alpha - Learning rate
+		# gae lambda - generalized advantage estimation
+		# policy_clip - clipping the policy in PPO
+		# batch size - number of samples per learning step
+		# N - number of steps to collect before training - (How much experience to collect 
+		# before updating the policy
+		#n_Epochs - number of epochs to run each PPO update
+		# n_epochs is how many times the collected batch of data (from N steps) is used to train the model.
+	
+
 
 	def reset(self):
+		#called at the start of each episode and reinitializes the environment
 		self.collision_hist = []
 		self.actor_list = []
 
-		flag = False
+		flag = False # to keep retrying spawn attempts until successful
 		while not flag:
 			try:
 				self.transform = random.choice(self.world.get_map().get_spawn_points())
@@ -58,6 +72,7 @@ class CarEnv:
 		self.vehicle.apply_control(carla.VehicleControl(throttle = 0.0, brake = 0.0))
 
 		colsensor = self.blueprint_library.find('sensor.other.collision')
+		# Collision sensors generate an event every time the vehicle hits something.
 		self.colsensor = self.world.spawn_actor(colsensor, self.transform, attach_to = self.vehicle)
 
 		self.actor_list.append(self.colsensor)
@@ -66,12 +81,15 @@ class CarEnv:
 		return None
 
 	def generate_scenario(self):
+		#adding other vehicles to the environment
 		flag = False
 		length = len(self.world.get_map().get_spawn_points())
+		#total number of valid spawn points
 		while not flag:
 			try:
 				spawn_list = self.world.get_map().get_spawn_points()
 				start_spawn_transform = spawn_list[np.random.choice(length)]
+				#tries spawning at a random valid spawn moment
 				self.actor =  self.world.spawn_actor(blueprint = self.model3, transform = start_spawn_transform)
 				flag = True
 
@@ -86,7 +104,12 @@ class CarEnv:
 		return None
 
 	def step(self, acc, steering):
-		acc = float(acc)
+		'''
+	  		one of the most important parts of any RL environment.
+	    		This is where the agent's action is applied to the environment.
+       			These are chosen by the PPO agent at each timestep.
+      		'''
+		acc = float(acc) #can be positive for throttle and  negative for brake
 		steering = float(steering)
 
 		if acc>=0:
@@ -136,13 +159,16 @@ class CarEnv:
 
 
 	def is_done(self):
-		#Check for some condn
+		#checks if the termination condition for the episode has been reached
 		if self.iters%100==0:
 			return True
 
 		return False
 
 	def run_exp(self):
+
+	 # Heart of training loop. This is the function that ties together 
+	 # the entire agent-environment interaction.
 		'''
 		reset env
 		done = False
@@ -163,7 +189,7 @@ class CarEnv:
 		prev_acc_y = 0
 
 		while not done:
-			self.iters+=1
+			self.iters+=1 #iters means timestep so far
 			input_A, input_B, input_C, input_D, input_E, input_F, input_G = self.get_state()
 			mu_steering, var_steering, steering, mu_acc, var_acc, acc, value = self.agent.choose_action(input_A,\
 				input_B, input_C, input_D, input_E, input_F, input_G)
