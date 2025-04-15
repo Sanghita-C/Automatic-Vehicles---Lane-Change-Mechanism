@@ -15,6 +15,8 @@ class NN:
 		input_F = Input(shape = 5) # Neighbouring vehicle 5 present, rel_x, rel_y, vy, ay (right_lane)
 		input_G = Input(shape = 5) # Neighbouring vehicle 6 present, rel_x, rel_y, vy, ay (right_lane)
 
+		#so now you get the entire state of the input 
+
 		left_lane = Concatenate()([input_B, input_C])
 		centre_lane = Concatenate()([input_D, input_E])
 		right_lane = Concatenate()([input_F, input_G]) 
@@ -32,6 +34,9 @@ class NN:
 		var_steering = tf.keras.activations.softplus(var_steering)
 		
 		mu_acc = Dense(1, activation = 'tanh')(x)
+		# tanh activation gives output in [-1, 1]
+		# Mean of Gaussian for steering action
+		#softplus ensures variance is positive (as required in Gaussian distribution)
 		var_acc = Dense(1)(x)
 		var_acc = tf.keras.activations.softplus(var_acc)
 
